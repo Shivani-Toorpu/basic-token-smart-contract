@@ -1,28 +1,41 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-contract BasicToken {
-    string public name = "BasicToken";
-    string public symbol = "BTK";
-    uint8 public decimals = 18;
-    uint256 public totalSupply;
+// Our contract is named "SimpleToken"
+contract SimpleToken {
+    
+    // Mapping to store token balances of each address
+    mapping(address => uint256) public balances;
 
-    mapping(address => uint256) public balanceOf;
-
+    // Event to log transfers on the blockchain
     event Transfer(address indexed from, address indexed to, uint256 value);
 
+    // Constructor function – runs only once when the contract is deployed
     constructor(uint256 initialSupply) {
-        totalSupply = initialSupply * 10 ** uint256(decimals);
-        balanceOf[msg.sender] = totalSupply;
+        // Assign the initial supply to the person deploying the contract
+        balances[msg.sender] = initialSupply;
     }
 
-    function transfer(address to, uint256 value) public returns (bool success) {
-        require(balanceOf[msg.sender] >= value, "Insufficient balance");
+    // Function to check the balance of any address
+    function balanceOf(address account) public view returns (uint256) {
+        return balances[account];
+    }
 
-        balanceOf[msg.sender] -= value;
-        balanceOf[to] += value;
+    // Function to transfer tokens from the sender to another address
+    function transfer(address recipient, uint256 amount) public returns (bool) {
+        // Check if the sender has enough tokens
+        require(balances[msg.sender] >= amount, "Insufficient balance");
 
-        emit Transfer(msg.sender, to, value);
+        // Subtract the amount from sender's balance
+        balances[msg.sender] -= amount;
+
+        // Add the amount to recipient's balance
+        balances[recipient] += amount;
+
+        // Emit the transfer event to log the transaction
+        emit Transfer(msg.sender, recipient, amount);
+
+        // Return true to indicate success
         return true;
     }
 }
